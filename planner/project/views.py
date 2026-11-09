@@ -19,6 +19,12 @@ from rest_framework.views import APIView
 from planner.utils import generate_tasks
 
 from django.db import transaction
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from rest_framework.permissions import IsAuthenticated
+
+from authentication.permission import IsAdmin, IsDeveleoper,IsProjectCoordinator
 # Create your views here.
 
 class ProjectListCreateView(ListCreateAPIView):
@@ -27,12 +33,45 @@ class ProjectListCreateView(ListCreateAPIView):
 
     serializer_class = ProjectSerializer
 
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+
+        permissions = []
+
+        if self.request.method in ['POST']:
+
+            permissions = [IsAdmin]
+
+        else:
+
+            permissions = [IsAuthenticated]
+
+        return [permission() for permission in permissions]
+
 class ProjectRetrieveDestroyUpdateView(RetrieveUpdateDestroyAPIView):
 
     lookup_field = 'uuid'
     queryset = Project.objects.filter(active_status=True)
 
     serializer_class = ProjectSerializer
+
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+
+        permissions = []
+
+        if self.request.method in ['PATCH','DELETE']:
+
+            permissions = [IsAdmin]
+        else:
+
+            permissions = [IsAuthenticated]
+
+
+        return [permission() for permission in permissions]
+
 
     def perform_destroy(self, instance):
         instance.active_status = False
@@ -44,6 +83,22 @@ class AssignedProjectListCreateView(ListCreateAPIView):
     queryset = AssignedProjects.objects.filter(active_status=True).select_related('project','coordinator').prefetch_related('developers')
     serializer_class = AssignedProjectSerializer
 
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+
+        permissions = []
+
+        if self.request.method in ['POST']:
+
+            permissions = [IsAdmin,IsProjectCoordinator]
+        else:
+
+            permissions = [IsAuthenticated]
+
+
+        return [permission() for permission in permissions]
+
 class AssignedProjectRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
     lookup_field = 'uuid'
@@ -52,6 +107,22 @@ class AssignedProjectRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
     serializer_class = AssignedProjectSerializer
 
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+
+        permissions = []
+
+        if self.request.method in ['POST']:
+
+            permissions = [IsAdmin,IsProjectCoordinator]
+        else:
+
+            permissions = [IsAuthenticated]
+
+
+        return [permission() for permission in permissions]
+
     def soft_delete(self,instance):
         instance.active_status = False
         instance.save()
@@ -59,6 +130,22 @@ class AssignedProjectRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 class TaskListCreateView(ListCreateAPIView):
 
     serializer_class = TaskSerializer
+
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+
+        permissions = []
+
+        if self.request.method in ['POST']:
+
+            permissions = [IsProjectCoordinator]
+        else:
+
+            permissions = [IsAuthenticated]
+
+
+        return [permission() for permission in permissions]
 
     def get_queryset(self):
 
@@ -86,11 +173,31 @@ class TaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
     serializer_class = TaskSerializer
 
+    authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+
+        permissions = []
+
+        if self.request.method in ['PATCH','DELETE']:
+
+            permissions = [IsProjectCoordinator]
+        else:
+
+            permissions = [IsAuthenticated]
+
+
+        return [permission() for permission in permissions]
+
     def perform_destroy(self, instance):
         instance.active_status = False
         instance.save()
 
 class GenerateTaskWithAIView(APIView):
+
+    authentication_classes = [JWTAuthentication]
+
+    permission_classes = [IsProjectCoordinator]
 
     def post(self,request,*args,**kwargs):
 
