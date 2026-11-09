@@ -1,0 +1,119 @@
+### list all projects
+
+GET http://127.0.0.1:8000/projects/
+
+### create project 
+POST http://127.0.0.1:8000/projects/
+Content-Type: multipart/form-data; boundary=abc
+
+--abc
+Content-Disposition: form-data; name="name"
+
+BookNest - Online Library Management System
+--abc
+Content-Disposition: form-data; name="description"
+
+<p>
+BookNest is a comprehensive Django-based Online Library Management System.
+</p>
+
+<h3>Key Features</h3>
+<ul>
+    <li>User Authentication & Authorization</li>
+    <li>Book and Category Management</li>
+    <li>ISBN Tracking and Inventory Control</li>
+    <li>Borrow and Return Management</li>
+    <li>Book Reservation System</li>
+</ul>
+
+<h3>Technology Stack</h3>
+<ul>
+    <li>Django</li>
+    <li>Django REST Framework</li>
+    <li>MySQL</li>
+    <li>Bootstrap 5</li>
+    <li>CKEditor 5</li>
+    <li>JWT Authentication</li>
+</ul>
+--abc
+Content-Disposition: form-data; name="document"; filename="booknestdoc.pdf"
+Content-Type: application/pdf
+
+< C:\Users\Afrin\Documents\luminar python course\django\project planner\planner\media\project-documents\booknestdoc.pdf
+--abc--
+
+### retireve a projects
+
+GET http://127.0.0.1:8000/projects/d9d1e180-9125-420c-abd6-a841e0e44978/
+
+### update project details
+PATCH http://127.0.0.1:8000/projects/d9d1e180-9125-420c-abd6-a841e0e44978/
+Content-Type: multipart/form-data; boundary=abc
+
+--abc
+Content-Disposition: form-data; name="name"
+
+SkillBridge - A Learning Platform
+--abc
+
+### soft delete a projects
+
+DELETE http://127.0.0.1:8000/projects/d9d1e180-9125-420c-abd6-a841e0e44978/
+
+###list all assigned projects:
+GET http://127.0.0.1:8000/assigned-projects
+
+### Create an assigned project
+POST http://127.0.0.1:8000/assigned-projects/
+Content-Type: application/json
+
+{
+  "project": 2,
+  "coordinator": 2,
+  "developers": [7, 4],
+  "project_duration": 6,
+  "project_start_date": "2026-11-02",
+  "project_tentative_end_date": "2026-12-02"
+}
+
+### update an assigned project
+PATCH http://127.0.0.1:8000/assigned-projects/75f4fae1-fd71-41b4-88a0-d4e417477703/
+Content-Type: application/json
+
+{
+    "developers" : [6,4,5,9]
+}
+
+###list all assigned tasks
+GET http://127.0.0.1:8000/tasks/75f4fae1-fd71-41b4-88a0-d4e417477703/
+
+
+### create a task
+POST http://127.0.0.1:8000/tasks/75f4fae1-fd71-41b4-88a0-d4e417477703/
+Content-Type: application/json
+
+{
+
+  "assigned_to": 6,
+  "title": "Design the project dashboard",
+  "description": "Create the initial dashboard layout.",
+  "priority": "Medium"
+}
+
+###list all assigned tasks
+GET http://127.0.0.1:8000/tasks-retrieve-update-destroy/91c80fb8-807f-4347-85ee-5c28037a2c8c/
+
+###list all assigned tasks
+PATCH http://127.0.0.1:8000/tasks-retrieve-update-destroy/91c80fb8-807f-4347-85ee-5c28037a2c8c/
+Content-Type: application/json
+
+{
+ 
+  "duration": "02:00:00",
+  "start_date": "2026-11-06",
+  "end_date": "2026-11-07"
+}
+
+### generate tasks by ai
+
+POST http://127.0.0.1:8000/generated-tasks/75f4fae1-fd71-41b4-88a0-d4e417477703/
