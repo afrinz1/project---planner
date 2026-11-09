@@ -113,9 +113,9 @@ class AssignedProjectRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
         permissions = []
 
-        if self.request.method in ['POST']:
+        if self.request.method in ['PATCH','DELETE']:
 
-            permissions = [IsAdmin,IsProjectCoordinator]
+            permissions = [IsAdmin]
         else:
 
             permissions = [IsAuthenticated]
